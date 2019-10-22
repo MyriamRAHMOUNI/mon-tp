@@ -4,9 +4,10 @@ l’intérêt d’être très court: 7408 nucléotides, linéaire et non segment
 
 import sys
 import argparse
-import networkx 
 import pytest 
 import pylint
+import networkx as nx
+import matplotlib.pyplot as plt
 
 def get_arguments():
     parser=argparse.ArgumentParser()
@@ -43,14 +44,67 @@ def build_kmer_dict(fichier_fastq, taille_kmer):
                 dict_kmer[kmer] += 1
     return dict_kmer
 
-####Construction de l’arbre de de Bruijn
+#### Construction de l’arbre de de Bruijn
+def build_graph(dic_kmer):
+    Graph = nx.DiGraph()
+    for i , (kmer, poids) in enumerate(dic_kmer.items()):
+        node1 = kmer[:-1]
+        node2 = kmer[1:]
+        Graph.add_edge(node1 , node2 , weight = poids)
+    return Graph
 
-def build_graph(): 
+#### Parcourir l’arbre de de Bruijn
+
+def get_starting_nodes(graph): 
+    '''prend en entrée un graphe et retourne une liste de noeuds d’entrée'''
+    pass 
+
+
+def get_sink_nodes():
+    '''prend en entrée un graphe et retourne une liste de noeuds de sortie'''
     pass
+
+
+def get_contigs():
+    '''prend un graphe, une liste de noeuds d’entrée et une liste de sortie et
+retourne une liste de tuple(contig, taille du contig)'''
+    pass
+
+
+def save_contigs(): 
+
+    '''ui prend un tuple (contig, taille du contig) et un nom de fichier de sortie
+et écrit un fichier de sortie contenant les contigs selon le format:'''
+
+    pass
+
+###Simplification du graphe de de Bruijn
+def std():
+    pass
+def path_average_weight():
+    pass
+def remove_paths(): 
+    pass
+def select_best_path():
+    pass
+def solve_bubble():
+    pass
+def simplify_bubbles():
+    pass
+##Détection des pointes (tips)
+def solve_entry_tips():
+    pass
+def solve_out_tips():
+    pass
+
 
 if __name__ == "__main__":
     args = get_arguments()
     print(args.i)
     a = build_kmer_dict(args.i, 3)
-    print(a)    
+    print(a)
+    graph = build_graph(a)
+    nx.draw(build_graph(a), with_labels=True, font_weight='bold')
+    plt.show()
+
 
