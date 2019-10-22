@@ -12,8 +12,8 @@ def get_arguments():
     parser=argparse.ArgumentParser()
     parser.add_argument('-i', required=True, help='fichier fastq single end')
     parser.add_argument('-k', required=False, help='taille des kmer')
-    parser.add_argument('-r', required=False, help='Reference genome')
-    parser.add_argument('-o', required=True, help='fichier configuration')
+    parser.add_argument('-r', required=False, help='Reference genome')  #true
+    parser.add_argument('-o', required=False, help='fichier contig')
     args=parser.parse_args()
     return args
 
@@ -42,11 +42,15 @@ def build_kmer_dict(fichier_fastq, taille_kmer):
             else:
                 dict_kmer[kmer] += 1
     return dict_kmer
- 
+
+####Construction de l’arbre de de Bruijn
+
+def build_graph(): 
+    pass
 
 if __name__ == "__main__":
-    print(sys.argv[2])
-    arguments=get_arguments()
-    a = build_kmer_dict('eva71_two_reads.fq', 3)
+    args = get_arguments()
+    print(args.i)
+    a = build_kmer_dict(args.i, 3)
     print(a)    
 
