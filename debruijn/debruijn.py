@@ -9,6 +9,7 @@ import pylint
 import networkx as nx
 import matplotlib.pyplot as plt
 import statistics
+import os
 
 def get_arguments():
     parser=argparse.ArgumentParser()
@@ -59,8 +60,9 @@ def build_graph(dic_kmer):
 def get_starting_nodes(graph): 
     '''prend en entrée un graphe et retourne une liste de noeuds d’entrée'''
     list_starting= []
-    for node in graph.nodes:
-        if len(list(graph.predecessors(node))) == 0:
+    for node in graph:
+        pred = list(graph.predecessors(node))
+        if(not pred):
             list_starting.append(node)
     return list_starting 
 
@@ -68,16 +70,21 @@ def get_starting_nodes(graph):
 def get_sink_nodes(graph):
     '''prend en entrée un graphe et retourne une liste de noeuds de sortie'''
     list_sink= []
-    for node in graph.nodes:
-        if len(list(graph.successors(node))) == 0:
+    for node in graph:
+        succ = list(graph.successors(node))
+        if(not succ):
             list_sink.append(node)
-    return list_sink 
+    return list_sink
+
+def fill(text, width=80):
+    return os.linesep.join(text[i:i+width] for i in range(0,
+            len(text), width))
 
 
 def get_contigs(graph, list_starting, list_sink):
     '''prend un graphe, une liste de noeuds d’entrée et une liste de sortie et
 retourne une liste de tuple(contig, taille du contig)'''
-	contigs = []
+    contigs = []
     for start in list_starting:
         for sink in list_sink:
             if algorithms.has_path(graph, start, sink) == True:
@@ -86,38 +93,26 @@ retourne une liste de tuple(contig, taille du contig)'''
                 for i in range(len(chemin)-1):
                     contig += chemin[i+1][-1] 
                 contigs.append((contig, len(contig)))
-    
     return contigs
 
-
-def save_contigs(): 
-
+def save_contigs(contigs, name_file):
     '''ui prend un tuple (contig, taille du contig) et un nom de fichier de sortie
 et écrit un fichier de sortie contenant les contigs selon le format:'''
-
-    pass
+    i = 0
+    with open(name_file, "w+") as contigs_file:
+        for i in range(len(contigs)):
+            i += 1
+            contigs_file.write('>contig_' + str(i) + ' len=' + str(contigs[i][1]) +'\n'+ str(fill(contigs[i][0])) + '\n')
+    contigs_file.close
+    return
 
 ###Simplification du graphe de de Bruijn
 def std():
-    statistics.stdev(data, xbar=None)
     pass
-def path_average_weight(chemin):
-    W = 0
-    for i in range(len(chemin)-1):
-        weight += graph[chemin[i][i+i][W]
-	return W/(len(chemin)-1)
-
-def remove_paths(G, CHEMINS, delete_entry_node=False, delete_sink_node=False): 
-	start = 1
-    sink = -1
-    if delete_entry_node == True:
-        start = 0
-    if delete_sink_node == True:
-        sink = None
-    for chemin in CHEMINS:
-        G.remove_nodes_from(path[entry:sink]) 
-    return G
-
+def path_average_weight():
+	pass
+def remove_paths(): 
+	pass
 def select_best_path():
     pass
 def solve_bubble():
@@ -135,12 +130,20 @@ if __name__ == "__main__":
     args = get_arguments()
     print(args.i)
     a = build_kmer_dict(args.i, 3)
+    if args.o==None:
+        name_file ='contigs.out'
+    else:
+        name_file = args.o
     print(a)
     graph = build_graph(a)
     nx.draw(build_graph(a), with_labels=True, font_weight='bold')
-    plt.show()
+    #plt.show()
     print(get_starting_nodes(graph))
     print(get_sink_nodes(graph))
-    print(graph[1])
+    #print(graph[1])
+    list_starting = get_starting_nodes(graph)
+    list_sink = get_sink_nodes(graph)
+    contigs = get_contigs(graph, list_starting, list_sink)
+    save_contigs(contigs, name_file)
 
 
